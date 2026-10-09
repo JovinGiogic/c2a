@@ -1,0 +1,9 @@
+{
+  "name": "c2a",
+  "version": "1.0.0",
+  "title": "C2A — Code to Architecture",
+  "description": "Code-grounded architecture prompts, reference-image handoffs, and human-returned image review.",
+  "entrypoint": "SKILL.md",
+  "license": "MIT-0",
+  "artifact_schema_version": "1.0"
+}

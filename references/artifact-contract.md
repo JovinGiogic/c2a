@@ -19,7 +19,7 @@ final/reference-guide.md
 final/references/layout.png
 ```
 
-Directories and optional files are created only when needed. Do not make empty image/review/final artifacts to imply progress. An image prompt can be complete without any returned image.
+Create `returned-images/<candidate>/<version>/` at prompt handoff so the guide can point to a usable save destination. An empty destination does not mean an image was received: keep `returned_images` empty until real files arrive. Create other directories and optional files only when needed; do not make placeholder image/review/final artifacts to imply progress. An image prompt can be complete without any returned image.
 
 ## Manifest fields
 
@@ -27,7 +27,7 @@ Directories and optional files are created only when needed. Do not make empty i
 | --- | --- |
 | `schema_version` | `1.0`. |
 | `project_id` | A nonempty stable project label. |
-| `active_stage` | `S0` through `S5`, indicating the current work/handoff context. |
+| `active_stage` | `S0` through `S5`, indicating the current work/handoff context. The optional README/story intake happens before S0 and needs no manifest or extra stage value. |
 | `current_analysis_id` | Current foundation ID or `null` while analysis is not ready. |
 | `analyses` | List of `{id, report, spec}`. Each spec's `analysis_id` must match. Freeze versions under `analysis/<id>/`. |
 | `candidate_plan` | Run-relative plan path, or `null` before design. |
@@ -61,9 +61,11 @@ Each candidate version contains:
 
 Version statuses are `draft`, `ready`, `awaiting_images`, `images_received`, `reviewed`, and `superseded`. A draft can have `null` prompt/guide paths; every declared non-null path must exist. Other statuses require a complete prompt and guide. `images_received` requires a returned image. `reviewed` requires review coverage of every returned image; the review basis must still be disclosed.
 
+Each delivered prompt must be at most 7000 Unicode characters, counting the complete UTF-8-decoded file including whitespace and reference instructions. Record its count and the generation/return steps in the guide, not in the prompt. The guide identifies the actual run directory and `returned-images/<candidate>/<version>/` destination; its return-message example uses real candidate/version identifiers and a concrete path.
+
 Reference IDs are consecutive `R1`, `R2`, etc., matching the prompt's `Reference Image 1`, etc. Each reference requires `id`, `path`, `origin`, `borrow`, and `avoid`. `origin` is `library`, `user`, or `returned_image`. Library entries additionally need `asset_id`; returned-image references need `source_candidate_id`, `source_version_id`, and `source_image_id`. Copy image files into the new version rather than linking to mutable external locations.
 
-A returned image record is `{id, path, origin: "human"}`. IDs are unique within the candidate version. A review record is `{path, image_ids, basis}`, where `basis` is `direct` or `human_observations` and image IDs belong to this exact version. A human-observation review is valid documentation but is not independent visual verification.
+A returned image record is `{id, path, origin: "human"}`. IDs are unique within the candidate version. Images must be stored under `returned-images/<candidate>/<version>/`; copy accessible conversation uploads or files from other locations there after establishing the version, preserve originals and prior results, and report the saved path. Never create a manifest file record for an upload that the host could not save. A review record is `{path, image_ids, basis}`, where `basis` is `direct` or `human_observations` and image IDs belong to this exact version. A human-observation review is valid documentation but is not independent visual verification.
 
 `change_note` describes what changed and why, including source interpretation changes, preferences preserved, and changed reference attachments. Do not overwrite the prompt or reference set of a version that already has returned images.
 
@@ -81,7 +83,7 @@ A returned image record is `{id, path, origin: "human"}`. IDs are unique within 
 }
 ```
 
-`selection_basis` is `human_choice` or `requested_prompt_only`. The final prompt is a copy of the selected version; if its content needs to change, create a new candidate version first. Copy the selected attachments into `final/references/` using the same IDs, and update the final guide's links. The final reference records use the same structure as candidate references with final-relative file locations. Record the actual review state in the guide; selection alone does not certify an image.
+`selection_basis` is `human_choice` or `requested_prompt_only`. The final prompt is a copy of the selected version; if its content needs to change, create a new candidate version first. Copy the selected attachments into `final/references/` using the same IDs, and update the final guide's links. The return directory stays `returned-images/<candidate_id>/<version_id>/` for the selected version; from the final guide its relative location is `../returned-images/<candidate_id>/<version_id>/`. The final reference records use the same structure as candidate references with final-relative file locations. Record the actual review state in the guide; selection alone does not certify an image.
 
 Finalization normally uses the current analysis. If the chosen candidate predates a meaning-changing foundation revision, recheck it against the current foundation and create a new version before finalization. Historical candidates retain their original analysis association.
 
@@ -89,4 +91,4 @@ Finalization normally uses the current analysis. If the chosen candidate predate
 
 On resumption, read the manifest, current foundation, relevant candidate version, and existing reviews. Check source/scope changes. Do not repeat completed work solely because a new conversation began, and do not infer that external generation happened without a returned image.
 
-The optional validator checks IDs, files, references, graph endpoints, basic prompt language/font requirements, and final-package correspondence. With `--source-root`, it checks current-analysis evidence files and line bounds; historical snapshots are not validated against a changed checkout. File existence and structural consistency do not prove source fidelity or visual quality.
+The optional validator checks IDs, files, references, graph endpoints, the 7000-character limit, basic prompt language/font requirements, and final-package correspondence. With `--source-root`, it checks current-analysis evidence files and line bounds; historical snapshots are not validated against a changed checkout. File existence and structural consistency do not prove source fidelity or visual quality.

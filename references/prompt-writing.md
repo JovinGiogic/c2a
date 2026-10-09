@@ -15,6 +15,12 @@ Use [the prompt template](../templates/architecture-prompt-template.md). Replace
 
 The image generator receives this file and optional attachments, not `architecture-spec.json` or a source repository. Therefore, "follow A01", "same as the last prompt", "read the code", or a path to another specification cannot stand in for architecture or layout content. A revision must restate everything still required, including typography and reference instructions.
 
+## Length budget
+
+The complete delivered prompt must be **at most 7000 characters**, for every candidate, revision, and final copy. Count Unicode characters in the entire UTF-8-decoded file, including headings, punctuation, spaces, newlines, and reference instructions; do not count bytes or tokens or trim whitespace before counting. For example, `len(path.read_bytes().decode("utf-8"))` measures this limit exactly. Measure again after the last edit and record the count in `reference-guide.md`, outside the image prompt.
+
+Shorten repeated labels, redundant descriptions, and decorative wording first. Keep human generation/return instructions, source citations, provenance, and design rationale in the guide, analysis, or candidate plan. Use faithful abstraction where appropriate and state any scope reduction explicitly; preserve the necessary modules, mechanisms, exact labels, relationships, typography, and complete text fallback. Do not meet the limit by moving required architecture into another file or a reference image. Deliver only after the complete prompt fits.
+
 ## Meaning before appearance
 
 Compile connections from the shared architecture specification and the candidate's selected abstraction. Distinguish call, data, control, state, and other relation types when their distinction matters. Do not let a shape, placement, icon, or reference image invent a module, consumer, branch, process boundary, or return path.
@@ -32,9 +38,11 @@ Check the prompt against its exact analysis ID, candidate plan, and attachment s
 - Labels are complete, consistent, English, and separate from internal IDs.
 - Comic Sans MS is specified for all visible text; there is no conflicting font instruction.
 - Theme, layout, palette, and density suit the project and agree with each other.
+- The emphasis and treatment reflect the available project story or README intent; inferred preferences are identified in the candidate plan.
 - Reference numbers resolve to real copied attachments and state their limited role.
 - The prompt stands alone, has no placeholders, and is a complete revision rather than a patch instruction.
+- The entire prompt is at most 7000 characters after the final edit, including reference instructions and whitespace.
 
 Repair contradictions before calling a prompt ready. If a central source ambiguity remains, resolve it or narrow the claim instead of hiding it with a visual instruction. Do not loop indefinitely: explain the missing fact and preserve the partial work for the human when it cannot be resolved from the available code.
 
-The optional validator checks basic format and reference correspondence. It cannot prove English fluency or that every architectural statement is supported. Prompt checks do not imply that a future image will render the font, text, or topology correctly; those are checked after the human returns an image.
+The optional validator checks the character limit, basic format, and reference correspondence. It cannot prove English fluency or that every architectural statement is supported. Prompt checks do not imply that a future image will render the font, text, or topology correctly; those are checked after the human returns an image.

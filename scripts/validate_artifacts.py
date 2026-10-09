@@ -13,6 +13,8 @@ from urllib.parse import unquote, urlsplit
 
 from find_references import KINDS, read_catalog
 
+MAX_PROMPT_CHARACTERS = 7000
+
 
 class ValidationError(ValueError):
     pass
@@ -169,8 +171,11 @@ def validate_spec(spec: dict, source_root: Path | None = None) -> None:
 
 
 def check_prompt(path: Path, reference_count: int) -> None:
-    content = path.read_text(encoding="utf-8")
+    # Preserve line endings so every character counts toward the delivery limit.
+    content = path.read_bytes().decode("utf-8")
     require(content.strip(), f"{path.name}: empty prompt")
+    require(len(content) <= MAX_PROMPT_CHARACTERS,
+            f"{path}: prompt has {len(content)} characters; maximum is {MAX_PROMPT_CHARACTERS}")
     require(re.search(r"\ball visible text\b[^.\n]*\bEnglish\b", content, re.I), "prompt: explicitly require English for all visible text")
     require(re.search(r"Comic Sans MS[^.\n]*all visible text|all visible text[^.\n]*Comic Sans MS", content, re.I), "prompt: require Comic Sans MS for all visible text")
     require(not re.search(r"[\u3400-\u9fff]", content), "prompt: contains non-English CJK text")

@@ -111,6 +111,9 @@ class RunTests(unittest.TestCase):
         )
         references = []
         guide = "# Reference guide\n\n[Complete prompt](architecture-prompt.md)\n\nNo image has been reviewed.\n"
+        return_directory = f"returned-images/{cid}/{vid}/"
+        (self.run / return_directory).mkdir(parents=True, exist_ok=True)
+        guide += f"\n[Save generated images here](../../../{return_directory})\n"
         if refs:
             prompt += "Use Reference Image 1 only for spacing; the architecture and labels above are authoritative. Without it, follow the full text layout.\n"
             self.write(prefix + "references/layout.png", tiny_png())
@@ -150,7 +153,8 @@ class RunTests(unittest.TestCase):
             self.write(copied, (self.run / ref["path"]).read_bytes())
             ref["path"] = copied
         self.write("final/architecture-prompt.md", (self.run / version["prompt"]).read_bytes())
-        self.write("final/reference-guide.md", (self.run / version["reference_guide"]).read_bytes())
+        guide = (self.run / version["reference_guide"]).read_text(encoding="utf-8")
+        self.write("final/reference-guide.md", guide.replace("../../../returned-images/", "../returned-images/"))
         self.manifest["active_stage"] = "S5"
         self.manifest["final"] = {"candidate_id": "C01", "version_id": version["id"], "analysis_id": version["analysis_id"],
                                   "selection_basis": "requested_prompt_only", "prompt": "final/architecture-prompt.md",
@@ -265,6 +269,31 @@ class RunTests(unittest.TestCase):
         path = self.run / self.version["prompt"]
         path.write_text(path.read_text() + "Read architecture-spec.json for the remaining connections.")
         with self.assertRaisesRegex(ValidationError, "internal analysis"):
+            self.check()
+
+    def test_prompt_limit_counts_unicode_characters_and_all_whitespace(self):
+        path = self.run / self.version["prompt"]
+        original = path.read_text(encoding="utf-8") + "\n## Notation\nUse x → 𝛼 for the value label.\n"
+        for count in (6999, 7000, 7001):
+            with self.subTest(characters=count):
+                content = original + " " * (count - len(original) - 2) + "\r\n"
+                path.write_bytes(content.encode("utf-8"))
+                if count <= 7000:
+                    self.check()
+                else:
+                    with self.assertRaisesRegex(ValidationError, "7001 characters; maximum is 7000"):
+                        self.check()
+
+    def test_prompt_limit_applies_to_revisions_with_references_and_final_copy(self):
+        version = self.add_version(vid="v02", refs=True)
+        path = self.run / version["prompt"]
+        content = path.read_text(encoding="utf-8").ljust(7000)
+        self.write(version["prompt"], content)
+        self.finalize(version)
+        self.assertTrue(self.check()["final_package"])
+        self.write(version["prompt"], content + "\n")
+        self.write("final/architecture-prompt.md", content + "\n")
+        with self.assertRaisesRegex(ValidationError, "7001 characters; maximum is 7000"):
             self.check()
 
     def test_dangling_edge_and_unsupported_inference_are_rejected(self):

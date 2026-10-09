@@ -44,10 +44,15 @@ cd <安装位置>/c2a && python scripts/validate_artifacts.py --package .
 
 也可以指定子目录、入口、配置、训练/推理路径或详略程度。未要求分步确认时，Agent 可根据授权连续推进到 prompt 交付；交付后由人类自行生图。
 
+**可选的项目动机故事是最开始的一步。** 你可以在首次请求中用 2–5 句话说明项目为什么做、为谁解决什么问题、希望读者理解什么，以及期望的风格或氛围。Agent 首先轻量检查目标项目的 README：有就默认读取动机与概述；没有可读 README 且你未提供故事，就立即询问，不会先让你等待代码分析或参考图检索。可以回复“跳过”；支持异步提问的宿主可在等待时继续代码分析。你的叙述优先于 README 中的项目意图，用来指导表达重点与风格，图中的架构事实仍需代码验证。
+
+**收到交付后，先打开 Agent 链接的 `reference-guide.md`。** 按指南打开完整 prompt、复制到生图工具、按顺序上传所列参考图，再生成图片。指南会给出当前候选/版本的实际保存目录和可复制的回传消息；没有参考图也会保留完整操作步骤。你可以将图片保存到运行目录下的 `returned-images/<候选>/<版本>/`，或在对话中上传图片并注明候选/版本，由 Agent 在可保存时归档。每次修订与最终交付都会提供相应指南；使用 `final/` 中的 prompt 生图时，仍按所选候选/版本回传。
+
 回传示例：
 
 ```text
-这是 C01/v01 对应的生成结果，已保存到 returned-images/C01/v01/result.png。
+这是 C01/v01 对应的生成结果，已保存到 c2a-runs/my-project/returned-images/C01/v01/result-01.png（也可直接上传到对话）。
+我使用了原始 prompt，未做修改；若修改过，会一并提供实际提交的文本。
 请对照代码分析和该版本 prompt 审阅，保留它的模块分组，修复箭头和文字问题，输出 v02 完整 prompt。
 ```
 
@@ -61,6 +66,7 @@ cd <安装位置>/c2a && python scripts/validate_artifacts.py --package .
 
 | 阶段 | 工作 | 产物 |
 | --- | --- | --- |
+| S0 之前（可选） | 默认读取项目 README；没有则立即询问动机故事，可跳过 | 动机、读者理解重点与风格偏好，带入分析和候选方案 |
 | S0 | 代码架构分析 | `code-analysis.md`、`architecture-spec.json` |
 | S1 | 项目相关的候选设计 | `candidate-plan.md` |
 | S2 | 完整 prompt 与参考图交付 | 各候选的 `architecture-prompt.md`、`reference-guide.md`、参考附件 |
@@ -83,7 +89,7 @@ c2a-runs/<project>/
 │   ├── architecture-prompt.md
 │   ├── reference-guide.md
 │   └── references/                 # 按需提供
-├── returned-images/
+├── returned-images/C01/v01/       # 交付时准备好，供保存 result-01.png 等结果
 ├── reviews/
 ├── manifest.json
 └── final/
@@ -98,6 +104,7 @@ c2a-runs/<project>/
 
 - 生图 prompt 正文使用英文，图内文字使用英文，字体统一指定 **Comic Sans MS**。
 - 每份 prompt 完整、自包含，包含架构、可见文字、连线、布局和约束。
+- 每份 prompt（含候选、修订和最终版）总长度不得超过 **7000 字符**，按整个文件的 Unicode 字符计数，包含空格、换行、Markdown 与参考图指令，不按字节或 token 计数。交付前校验，字符数记录在指南中。
 - 模块与关系来自代码和有效配置；文档辅助解释，不替代实现依据。
 - 主题、布局、配色、画幅、密度及参考图按项目分析决定。字体选择不限定整体主题。
 - 分析报告、审阅和交互可以使用中文。
@@ -117,7 +124,7 @@ python scripts/validate_artifacts.py --run /path/to/run --source-root /path/to/c
 python -m unittest discover -s tests -v
 ```
 
-检查脚本验证结构、路径、版本对应及基础 prompt 约束；源码语义和真实图片仍需 Agent/人类审阅。字体若无法从图片可靠辨认，应记为待确认。
+检查脚本验证结构、路径、版本对应、7000 字符上限及基础 prompt 约束；源码语义和真实图片仍需 Agent/人类审阅。字体若无法从图片可靠辨认，应记为待确认。
 
 ## 项目结构
 
@@ -157,9 +164,11 @@ Hosts without a native skill mechanism need no install step — point the Agent 
 
 Load [SKILL.md](SKILL.md) through your host's skill mechanism or ask an Agent to read it directly. File reading/search and text output are sufficient for the core workflow; visual review additionally needs image access and visual capability. The optional Python 3.10+ utilities use only the standard library.
 
-Prompts and visible figure text are English. Every prompt requires **Comic Sans MS** for all visible text. Theme, layout, palette, aspect ratio, and detail follow the particular project. Each prompt fully specifies architecture and labels; reference images supplement appearance and do not introduce unsupported facts. Analysis and conversation can use the user's language.
+Prompts and visible figure text are English. Every prompt requires **Comic Sans MS** for all visible text and must contain **at most 7000 Unicode characters**, including whitespace, Markdown, and reference instructions in the complete file. This applies to every candidate, revision, and final copy; the validator enforces the limit. Theme, layout, palette, aspect ratio, and detail follow the particular project and its intended framing. Each prompt fully specifies architecture and labels; reference images supplement appearance and do not introduce unsupported facts. Analysis and conversation can use the user's language.
 
-Start with a repository, relevant scope/entry/configuration, and any design preferences. Outputs follow S0 code foundation → S1 candidate design → S2 prompt delivery → human generation → S3 image review → S4 prompt revision → S5 final handoff. Repeat the human-generation/review loop as useful. Prompt-only delivery is also supported.
+Start with a repository, relevant scope/entry/configuration, and any design preferences. Before S0, optionally provide a short project motivation story: why it exists, whose problem it addresses, the reader takeaway, and desired mood. The Agent first checks the target README and reads its motivation and overview by default. If no readable README or supplied story is available, it asks immediately, before deeper code analysis or reference retrieval; you may skip. Hosts with nonblocking questions can continue code analysis while you answer. User framing takes precedence over README-derived intent and informs visual style, while code remains the basis for architecture facts.
+
+Outputs then follow S0 code foundation → S1 candidate design → S2 prompt delivery → human generation → S3 image review → S4 prompt revision → S5 final handoff. **Open the linked `reference-guide.md` first** at every delivery: it explains which complete prompt to copy, which images to attach and in what order, where to save results, and how to request review. Return images to the run's `returned-images/<candidate>/<version>/` directory, or upload them in the conversation with the candidate/version for the Agent to archive when supported. The guide includes the actual location and a ready-to-copy return message. A final prompt still maps to the selected candidate/version. Repeat the human-generation/review loop as useful; prompt-only delivery is also supported.
 
 The final `architecture-prompt.md` is accompanied by a reference guide and selected attachments where applicable. Analysis, candidate versions, returned images, and reviews remain available in the run directory. C2A neither calls image-generation APIs nor needs their credentials.
 

@@ -4,6 +4,8 @@
 
 Record the returned image's path, candidate ID, prompt version, and analysis ID. Read that version's complete prompt, attachment guide, and code foundation. If a human edited the prompt before generation, preserve the actual submitted prompt as a new version or record the known difference; do not claim the image was generated from an unchanged version without knowing that.
 
+Accept the guide's saved result, a conversation upload, or an accessible image path. Once the candidate/version is established, copy accessible originals into the run's `returned-images/<candidate>/<version>/` directory unless already there, choose a distinct filename without overwriting an earlier result, update the manifest, and confirm the stored path. Keep this mapping even when the human generated from the selected `final/` prompt. If an upload can be viewed but cannot be saved, state that archival limitation and do not claim a saved image or add a nonexistent file record.
+
 Several images may come from the same prompt. Give them distinct image IDs and review them separately. When the candidate/version association is unclear, ask the human before making version-specific findings. Never infer a prompt version from an image's appearance alone.
 
 Use [the review template](../templates/review-template.md). State the review basis:
@@ -36,7 +38,7 @@ Report what was checked, what remains uncertain, and what the human needs to dec
 - If presentation or prompt clarity was wrong, keep the analysis ID and write a new candidate version.
 - Preserve user-selected useful features and explain any that must change to stay faithful to code.
 - Turn specific defects into precise positive instructions and targeted prohibitions, rather than accumulating generic negative wording.
-- Write a complete replacement prompt with English text, Comic Sans MS, and its own reference mapping. It must work without the previous prompt.
+- Write a complete replacement prompt with English text, Comic Sans MS, and its own reference mapping, within 7000 characters including whitespace and reference instructions. It must work without the previous prompt; remeasure after the final edit.
 - A returned image may become a new reference for its useful appearance. Copy it into the new version's attachments, identify its origin, and explicitly prohibit carrying forward the defects found in review.
 
-After delivering the revision, the next image-generation step belongs to the human. Preserve the current result and wait for a returned image if further visual review is requested.
+Deliver the revision with a prominent link to its `reference-guide.md` and an explicit instruction to follow that guide for generation and return to the new version's directory. The next image-generation step belongs to the human. Preserve the current result and wait for a returned image if further visual review is requested.

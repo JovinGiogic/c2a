@@ -2,6 +2,8 @@
 
 ## Establish the actual scope
 
+Complete the lightweight README/story step in `SKILL.md` before this deeper reading. Carry available project motivation, intended audience, desired takeaway, and style preferences into the report, with their source and any inferred assumptions. This framing guides what the figure should explain; it is not evidence that a module or connection exists.
+
 Record the repository label, revision when available, working-tree state, relevant directories, entry points, and configuration choices. A commit alone is insufficient when local changes affect the analysis. If version information is unavailable, record that fact and the inspected files. Do not claim whole-repository coverage after inspecting a subset.
 
 Start from manifests, application/CLI entry points, model construction, routing/registration, and configuration. Follow the paths needed for the requested figure. Skip vendored dependencies, caches, generated files, large data, and unrelated modules unless they are part of the requested architecture. A missing external implementation can remain a bounded external dependency.

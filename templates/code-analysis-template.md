@@ -11,6 +11,17 @@ Use the user's language for this report. Replace placeholders and omit irrelevan
 - Excluded or unread areas:
 - Requested figure scope and intended reader:
 
+## Project motivation and intended framing
+
+- Context status: user story / README-derived / inferred / pending / skipped.
+- Source: user-provided summary and/or the target README path and relevant section.
+- Motivation: whose problem the project addresses and why it exists.
+- Intended reader takeaway and emphasis:
+- Stated style or mood preferences, if any:
+- Inferred framing, remaining assumptions, or differences between README and user intent:
+
+Preserve the user's framing for candidate design. Verify implementation claims against code separately; this optional context is not architecture evidence.
+
 ## Implementation overview
 
 Explain what the selected code actually implements and the architecture question the figure should answer.

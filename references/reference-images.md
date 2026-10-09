@@ -34,17 +34,21 @@ Use `Reference Image 1` for manifest reference ID `R1`, `Reference Image 2` for 
 
 ## Human handoff
 
-Copy each selected uploadable preview into `candidates/<candidate>/<version>/references/` and write `reference-guide.md` using [the template](../templates/reference-guide-template.md). The guide includes:
+Copy each selected uploadable preview into `candidates/<candidate>/<version>/references/` and write `reference-guide.md` in the user's language using [the template](../templates/reference-guide-template.md). Prepare the run's `returned-images/<candidate>/<version>/` directory as a usable return destination; keep manifest image records empty until real images arrive. If filesystem writing is unavailable, give the exact intended path and ask the human to create it when saving. The guide includes:
 
 1. Candidate ID, prompt version, and analysis ID.
-2. The complete prompt's path.
+2. A clickable link to the complete prompt and its measured length, at most 7000 characters.
 3. Each reference ID, attachment order, a clickable relative file link, and its asset/source identifier.
 4. What to borrow, what to avoid, and whether the image has been visually inspected.
-5. A short instruction to submit the complete prompt with the listed attachments, then return generated images with the candidate/version identifiers.
+5. Generation steps: open the prompt, copy its entire text, upload the listed attachments in order when supported, and generate externally.
+6. The actual run directory and full result-save path, distinct filenames such as `result-01.png`, and a relative link to the prepared return directory when available. Explain that users who cannot save there can upload the image in the conversation or supply an accessible file path.
+7. A ready-to-copy return message containing the real candidate/version and image path, plus instructions to disclose any prompt edits and optionally state what to preserve or improve. Explain that review can produce a new complete prompt and guide for another round.
 
-The manifest stores paths relative to the run root; links in a guide are relative to that guide. These two bases must not be confused. For example, the manifest might store `candidates/C01/v01/references/layout.png`, while the neighboring guide links to `references/layout.png`.
+The manifest stores paths relative to the run root; links in a guide are relative to that guide. These two bases must not be confused. For example, the manifest might store `candidates/C01/v01/references/layout.png`, while the neighboring guide links to `references/layout.png`. The return destination is `returned-images/C01/v01/` from the run root, `../../../returned-images/C01/v01/` from that candidate guide, and `../returned-images/C01/v01/` from the final guide when C01/v01 is selected. Resolve the human-facing full path against the actual workspace, and update it if the run moves. Link only to directories that exist; when delivering text-only artifacts or only a detached `final/` package, use a plain destination path and the upload alternative instead of a broken link.
 
-When there are no references, write a short guide saying the prompt needs no attachments and keep `reference_images` empty. Do not invent a reference to satisfy a template. When the chosen generator cannot accept reference images, the full text prompt remains usable; do not start a provider-configuration workflow.
+When there are no references, replace the attachment table with “No reference images are required; use the complete text prompt,” keep `reference_images` empty, and retain the generation and return instructions. Do not invent a reference to satisfy a template. When the chosen generator cannot accept reference images, the full text prompt remains usable; do not start a provider-configuration workflow.
+
+At every prompt delivery, revision, and final handoff, **explicitly direct the human to open the guide**. Lead the response with a clickable link to the actual guide and a short next action in the user's language: follow it to submit the prompt and attachments, generate externally, then save or upload the result with its candidate/version for review. Also link the complete prompt. For a prompt-only request, explain that generation and return are optional.
 
 ## Retained assets and portability
 
@@ -52,4 +56,4 @@ Library PNGs are prepared previews of existing material. Original vector or pres
 
 Retain source and license information with selected assets. Historical source-paper identifiers are provenance only. Missing historical originals must never be listed as local available attachments.
 
-At final handoff, copy the selected attachments into `final/references/`, preserve their IDs/order, and rewrite the guide's links. Do not leave a final package dependent on the installed skill's location or a previous candidate directory.
+At final handoff, copy the selected attachments into `final/references/`, preserve their IDs/order, and rewrite the guide's prompt, attachment, and return-directory links. Keep the return location associated with the selected candidate/version; there is no separate `final` candidate. The prompt and its reference attachments must remain usable independently of the installed skill's location or a previous candidate directory.

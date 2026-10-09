@@ -2,7 +2,9 @@
 
 ## Choose the question before the surface
 
-Use the code foundation to choose what a reader should understand: component responsibilities, an execution path, a state transition, a model mechanism, a deployment boundary, or a combination with a clear primary view. Emphasize what matters in this project rather than assuming every project is a linear data pipeline.
+Start from the recorded user story or README-derived motivation and use the code foundation to choose what a reader should understand: component responsibilities, an execution path, a state transition, a model mechanism, a deployment boundary, or a combination with a clear primary view. Emphasize what matters in this project rather than assuming every project is a linear data pipeline.
+
+Translate the intended takeaway and any stated mood into concrete design choices: emphasis, reading order, grouping, theme, palette, and detail. Explain the connection in each candidate's rationale. User framing takes precedence over README-derived intent; label your own style inferences when no preference was supplied. A story may guide presentation but cannot introduce unsupported modules, mechanisms, or claims.
 
 Use [the candidate plan template](../templates/candidate-plan-template.md). Each candidate states its reader question, architecture coverage, abstraction, visual approach, and why it is useful. Two or three distinct candidates are often enough; follow the requested count or explain why fewer meaningful alternatives exist. Do not fill a quota with color-only variations.
 

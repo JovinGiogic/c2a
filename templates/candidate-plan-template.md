@@ -2,6 +2,7 @@
 
 - Project:
 - Analysis ID and foundation paths:
+- Project motivation, source, and intended reader takeaway (or explicitly inferred framing):
 - User constraints and requested number of alternatives:
 - Fixed typography: English visible text; Comic Sans MS.
 
@@ -21,6 +22,7 @@ Repeat for each candidate:
 - Compression: what becomes a container, port/edge label, repeated-instance marker, or detail panel:
 - Layout and reading order:
 - Theme, shapes, and visual treatment:
+- How emphasis and style express the project story or README intent; distinguish stated preferences from inferred choices:
 - Palette and any color semantics:
 - Aspect ratio and intended viewing size:
 - Connector types, labels, routing, and legend:
